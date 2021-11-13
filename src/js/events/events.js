@@ -63,6 +63,7 @@ export default class Events extends PhotoApiService {
       if (hits.length < this.per_page) {
         this.refs.loadMoreBtn.classList.add('visually-hidden');
         this.refs.loadMoreBtn.setAttribute('disabled', true);
+        return myAlert(NOT_ALERTS.END);
       }
     });
   };

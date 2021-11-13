@@ -10,6 +10,7 @@ const NOT_ALERTS = {
   NO_VALID: 'Use Latin letters in your request!',
   NOT_FOUND: 'No images found',
   FETCH_ERROR: 'Database access error',
+  END: 'No more images',
 };
 
 const myStack = new Stack({
