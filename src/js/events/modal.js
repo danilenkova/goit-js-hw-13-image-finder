@@ -1,7 +1,6 @@
 import getRefs from '../data/references';
 
 const refs = getRefs();
-
 // Modal events
 function onOpenModal(e) {
   e.preventDefault();
@@ -39,9 +38,47 @@ function onBackDropClick(e) {
 }
 
 function onKeyPress(e) {
+  let index;
+  const collection = document.querySelectorAll('.photo');
+  const currentOpenImage = document.querySelector('.lightbox__image');
+  const currentSrc = currentOpenImage.src;
   if (e.code === 'Escape') {
     onCloseModal();
   }
+  console.log(e.code);
+  if (e.code === 'ArrowRight') {
+    index = 0;
+    for (let i = 0; i <= collection.length - 1; i++) {
+      if (collection[i].dataset.source === currentSrc) {
+        index = i;
+        if (index >= collection.length - 1) {
+          index = 0;
+          currentOpenImage.src = collection[index].dataset.source;
+          currentOpenImage.alt = collection[index].alt;
+        } else {
+          currentOpenImage.src = collection[index + 1].dataset.source;
+          currentOpenImage.alt = collection[index + 1].alt;
+        }
+      }
+    }
+  }
+  if (e.code === 'ArrowLeft') {
+    index = 0;
+    for (let i = 0; i <= collection.length - 1; i++) {
+      if (collection[i].dataset.source === currentSrc) {
+        index = i;
+        if (index < 1) {
+          index = collection.length - 1;
+          currentOpenImage.src = collection[index].dataset.source;
+          currentOpenImage.alt = collection[index].alt;
+          console.log(index);
+        } else {
+          currentOpenImage.src = collection[index - 1].dataset.source;
+          currentOpenImage.alt = collection[index - 1].alt;
+        }
+      }
+    }
+  }
 }
 
-export { onOpenModal, onCloseModal, onBackDropClick, onKeyPress };
+export { onOpenModal, onCloseModal, onBackDropClick };

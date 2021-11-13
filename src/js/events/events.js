@@ -1,6 +1,6 @@
 import PhotoApiService from '../servise/apiService';
 import { galleryCreate, clearPage } from '../servise/buildingPage';
-import { onOpenModal, onCloseModal, onBackDropClick, onKeyPress } from '../events/modal.js';
+import { onOpenModal, onCloseModal, onBackDropClick } from '../events/modal.js';
 import { scrollTo, scrollTop } from '../vendors/scrolltotop';
 import { NOT_ALERTS, myAlert, showError } from '../vendors/alert.js';
 
@@ -13,7 +13,6 @@ export default class Events extends PhotoApiService {
   loadEventListener = () => {
     this.refs.searchForm.addEventListener('keydown', this.turnOnBtn);
     this.refs.searchForm.addEventListener('submit', this.onSearch);
-    this.refs.loadMoreBtn.addEventListener('click', this.onLoadMore);
 
     this.refs.galleryList.addEventListener('click', onOpenModal);
     this.refs.closeModalBtn.addEventListener('click', onCloseModal);
@@ -26,6 +25,7 @@ export default class Events extends PhotoApiService {
   };
   onSearch = e => {
     e.preventDefault();
+    this.refs.searchForm.elements.query.blur();
     this.searchQuery = this.refs.searchForm.elements.query.value;
     if (!this.searchQuery.trim()) {
       return myAlert(NOT_ALERTS.EMPTY);
@@ -47,6 +47,7 @@ export default class Events extends PhotoApiService {
       this.checkLoadMore();
       if (total > this.totalImages) {
         this.refs.loadMoreBtn.classList.remove('visually-hidden');
+        this.refs.loadMoreBtn.addEventListener('click', this.onLoadMore);
       } else if (total < this.per_page) {
         return;
       }
@@ -55,8 +56,23 @@ export default class Events extends PhotoApiService {
 
   onLoadMore = () => {
     this.incrementPage();
-    this.fetchPhotos().then(({ hits }) => galleryCreate(hits));
-    this.countTotalImages();
+    this.fetchPhotos().then(({ total, hits }) => {
+      galleryCreate(hits);
+      this.countTotalImages();
+      this.scrollToNext();
+      if (hits.length < this.per_page) {
+        this.refs.loadMoreBtn.classList.add('visually-hidden');
+        this.refs.loadMoreBtn.setAttribute('disabled', true);
+      }
+    });
+  };
+
+  scrollToNext = () => {
+    const scrollEl = document.querySelectorAll('.gallery__item');
+    scrollEl[this.totalImages - 1 - (this.per_page - 1)].scrollIntoView({
+      behavior: 'smooth',
+      block: 'start',
+    });
   };
 
   checkLoadMore = () => {
