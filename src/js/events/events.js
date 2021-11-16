@@ -25,6 +25,7 @@ export default class Events extends PhotoApiService {
   };
   onSearch = e => {
     e.preventDefault();
+    this.checkLoadMore();
     this.refs.searchForm.elements.query.blur();
     this.searchQuery = this.refs.searchForm.elements.query.value;
     if (!this.searchQuery.trim()) {
@@ -60,7 +61,7 @@ export default class Events extends PhotoApiService {
       galleryCreate(hits);
       this.countTotalImages();
       this.scrollToNext();
-      if (hits.length < this.per_page) {
+      if (total <= this.totalImages) {
         this.refs.loadMoreBtn.classList.add('visually-hidden');
         this.refs.loadMoreBtn.setAttribute('disabled', true);
         return myAlert(NOT_ALERTS.END);
